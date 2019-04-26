@@ -107,18 +107,18 @@ func describeType(f io.Writer, t reflect.Type, level int, name bool) {
 				m := t.Method(i)
 
 				if m.Type.Kind() == reflect.Func {
-					fmt.Fprintf(f, "%s%s", Indent(level+1), m.Name)
+					fmt.Fprintf(f, "%s%s", indent(level+1), m.Name)
 					describeFuncParams(f, m.Type, level+1)
 
 				} else {
-					fmt.Fprintf(f, "%s%s ", Indent(level+1), m.Name)
+					fmt.Fprintf(f, "%s%s ", indent(level+1), m.Name)
 					describeType(f, m.Type, level+1, true)
 				}
 
 				fmt.Fprintf(f, "\n")
 			}
 
-			fmt.Fprintf(f, "%s}", Indent(level))
+			fmt.Fprintf(f, "%s}", indent(level))
 		}
 	case reflect.Map:
 		fmt.Fprintf(f, "map[")
@@ -141,9 +141,9 @@ func describeType(f io.Writer, t reflect.Type, level int, name bool) {
 				sf := t.Field(i)
 
 				if sf.Anonymous {
-					fmt.Fprintf(f, "%s", Indent(level+1))
+					fmt.Fprintf(f, "%s", indent(level+1))
 				} else {
-					fmt.Fprintf(f, "%s%s ", Indent(level+1), sf.Name)
+					fmt.Fprintf(f, "%s%s ", indent(level+1), sf.Name)
 				}
 
 				describeType(f, sf.Type, level+1, true)
@@ -155,7 +155,7 @@ func describeType(f io.Writer, t reflect.Type, level int, name bool) {
 				fmt.Fprintf(f, "\n")
 			}
 
-			fmt.Fprintf(f, "%s}", Indent(level))
+			fmt.Fprintf(f, "%s}", indent(level))
 		}
 	case reflect.UnsafePointer:
 		fmt.Fprintf(f, "unsafe.Pointer")
@@ -252,12 +252,12 @@ func describeValue(f io.Writer, t reflect.Type, v reflect.Value, level int) {
 			fmt.Fprintf(f, "{\n")
 
 			for j := 0; j < v.Len(); j++ {
-				fmt.Fprintf(f, "%s", Indent(level+1))
+				fmt.Fprintf(f, "%s", indent(level+1))
 				describeValue(f, t.Elem(), v.Index(j), level+1)
 				fmt.Fprintf(f, ",\n")
 			}
 
-			fmt.Fprintf(f, "%s", Indent(level))
+			fmt.Fprintf(f, "%s", indent(level))
 			fmt.Fprintf(f, "}")
 		}
 	case reflect.Chan:
@@ -272,7 +272,7 @@ func describeValue(f io.Writer, t reflect.Type, v reflect.Value, level int) {
 	case reflect.Func:
 		fmt.Fprintf(f, "func ")
 		describeFuncParams(f, t, level)
-		fmt.Fprintf(f, " {func%d}", FuncNumber(v))
+		fmt.Fprintf(f, " {func%d}", objectNumber(v))
 	case reflect.Interface:
 		describeType(f, t, level, true)
 		fmt.Fprintf(f, "{}")
@@ -285,16 +285,16 @@ func describeValue(f io.Writer, t reflect.Type, v reflect.Value, level int) {
 
 			kt := t.Key()
 			keys := v.MapKeys()
-			sort.Slice(keys, func(i, j int) bool { return Less(kt, keys[i], keys[j]) })
+			sort.Slice(keys, func(i, j int) bool { return less(kt, keys[i], keys[j]) })
 			for _, k := range keys {
-				fmt.Fprintf(f, "%s", Indent(level+1))
+				fmt.Fprintf(f, "%s", indent(level+1))
 				describeValue(f, t.Key(), k, level+1)
 				fmt.Fprintf(f, ": ")
 				describeValue(f, t.Elem(), v.MapIndex(k), level+1)
 				fmt.Fprintf(f, ",\n")
 			}
 
-			fmt.Fprintf(f, "%s}", Indent(level))
+			fmt.Fprintf(f, "%s}", indent(level))
 		}
 	case reflect.Ptr:
 		fmt.Fprintf(f, "&")
@@ -307,12 +307,12 @@ func describeValue(f io.Writer, t reflect.Type, v reflect.Value, level int) {
 			fmt.Fprintf(f, "{\n")
 
 			for j := 0; j < v.Len(); j++ {
-				fmt.Fprintf(f, "%s", Indent(level+1))
+				fmt.Fprintf(f, "%s", indent(level+1))
 				describeValue(f, t.Elem(), v.Index(j), level+1)
 				fmt.Fprintf(f, ",\n")
 			}
 
-			fmt.Fprintf(f, "%s}", Indent(level))
+			fmt.Fprintf(f, "%s}", indent(level))
 		}
 	case reflect.Struct:
 		describeType(f, t, level, true)
@@ -322,7 +322,7 @@ func describeValue(f io.Writer, t reflect.Type, v reflect.Value, level int) {
 			sf := t.Field(i)
 			fv := v.Field(i)
 
-			fmt.Fprintf(f, "%s", Indent(level+1))
+			fmt.Fprintf(f, "%s", indent(level+1))
 			if !sf.Anonymous {
 				if sf.PkgPath != "" && sf.PkgPath != reflect.TypeOf(PackageType(0)).PkgPath() {
 					fmt.Fprintf(f, "%s.%s: ", sf.PkgPath, sf.Name)
@@ -338,7 +338,7 @@ func describeValue(f io.Writer, t reflect.Type, v reflect.Value, level int) {
 			fmt.Fprintf(f, ",\n")
 		}
 
-		fmt.Fprintf(f, "%s}", Indent(level))
+		fmt.Fprintf(f, "%s}", indent(level))
 	case reflect.UnsafePointer:
 		fmt.Fprintf(f, "unsafe.Pointer(%x)", v.Pointer())
 	default:
@@ -346,7 +346,7 @@ func describeValue(f io.Writer, t reflect.Type, v reflect.Value, level int) {
 	}
 }
 
-func Indent(level int) string {
+func indent(level int) string {
 	tabs := "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
 	t := tabs
 	for len(t) < level {
@@ -355,35 +355,33 @@ func Indent(level int) string {
 	return t[0:level]
 }
 
-type funcTable struct {
+var objNums struct {
 	sync.RWMutex
-	Table map[string]int
+	Table map[uintptr]int
 }
 
-var funcNums funcTable
-
-func FuncNumber(v reflect.Value) int {
-	ptr := fmt.Sprintf("%p", v.Interface())
-	funcNums.RLock()
-	if n, ok := funcNums.Table[ptr]; ok {
-		funcNums.RUnlock()
+func objectNumber(v reflect.Value) int {
+	ptr := v.Pointer()
+	objNums.RLock()
+	if n, ok := objNums.Table[ptr]; ok {
+		objNums.RUnlock()
 		return n
 	}
-	funcNums.RUnlock()
-	funcNums.Lock()
-	defer funcNums.Unlock()
-	if n, ok := funcNums.Table[ptr]; ok {
+	objNums.RUnlock()
+	objNums.Lock()
+	defer objNums.Unlock()
+	if n, ok := objNums.Table[ptr]; ok {
 		return n
 	}
-	if funcNums.Table == nil {
-		funcNums.Table = make(map[string]int)
+	if objNums.Table == nil {
+		objNums.Table = make(map[uintptr]int)
 	}
-	n := len(funcNums.Table)
-	funcNums.Table[ptr] = n
+	n := len(objNums.Table)
+	objNums.Table[ptr] = n
 	return n
 }
 
-func Less(t reflect.Type, a, b reflect.Value) bool {
+func less(t reflect.Type, a, b reflect.Value) bool {
 	k := t.Kind()
 	if k == reflect.String {
 		return a.String() < b.String()
