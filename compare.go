@@ -11,6 +11,7 @@ var diffFunc func(out io.Writer, a, b string)
 // To include a default diff function, import the go-describe/diff package.
 //
 //      import (
+//              "github.com/tjmerritt/go-describe"
 //              _ "github.com/tjmerritt/go-describe/diff"
 //      )
 //
