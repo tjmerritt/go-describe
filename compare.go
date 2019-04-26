@@ -19,7 +19,7 @@ func DiffFunc(f func(out io.Writer, a, b string)) {
 	diffFunc = f
 }
 
-// Compare converts two values to their initialization format and then optionally outputs a diff betwen the two
+// Compare converts two values to their initialization format and then optionally outputs a diff between the two
 // representations if the they are different.  Returns true if the representations of the two values are the same.
 func Compare(a, b interface{}) bool {
 	astr := Value(a)
