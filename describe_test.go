@@ -32,7 +32,7 @@ func (o *Obj) Method(x int) string {
 	return fmt.Sprintf("%d", o.Field+x)
 }
 
-func TestDescribeType(t *testing.T) {
+func TestType(t *testing.T) {
 	type args struct {
 		v interface{}
 	}
@@ -326,9 +326,9 @@ func TestDescribeType(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := DescribeType(tt.args.v)
+			got := Type(tt.args.v)
 			if got != tt.want {
-				t.Errorf("DescribeType() = %v, want %v", got, tt.want)
+				t.Errorf("Type() = %v, want %v", got, tt.want)
 			}
 			//                        fmt.Printf("-> %s\n", got)
 		})
@@ -367,7 +367,7 @@ func Test_describeType(t *testing.T) {
 	}
 }
 
-func TestDescribeValue(t *testing.T) {
+func TestValue(t *testing.T) {
 	type args struct {
 		v interface{}
 	}
@@ -723,8 +723,8 @@ func TestDescribeValue(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := DescribeValue(tt.args.v); got != tt.want {
-				t.Errorf("DescribeValue() = %v, want %v", got, tt.want)
+			if got := Value(tt.args.v); got != tt.want {
+				t.Errorf("Value() = %v, want %v", got, tt.want)
 			}
 		})
 	}

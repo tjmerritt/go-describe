@@ -11,8 +11,8 @@ import (
 
 type packageType int
 
-// DescribeType returns a string that could be used to define a type
-func DescribeType(v interface{}) string {
+// Type returns a string that could be used to define a type
+func Type(v interface{}) string {
 	var buf bytes.Buffer
 	describeType(&buf, reflect.TypeOf(v), 0, false)
 	return buf.String()
@@ -164,8 +164,8 @@ func describeType(f io.Writer, t reflect.Type, level int, name bool) {
 	}
 }
 
-// DescribeValue returns a string that could be used to declare an initial value
-func DescribeValue(v interface{}) string {
+// Value returns a string that could be used to declare an initial value
+func Value(v interface{}) string {
 	var buf bytes.Buffer
 	describeValue(&buf, reflect.TypeOf(v), reflect.ValueOf(v), 0)
 	return buf.String()

@@ -15,8 +15,8 @@ func SetDiffFunc(f func(out io.Writer, a, b string)) {
 // Compare converts two values to there initialization format and then optionally output a diff betwen the two
 // representations if the they are different.  Returns true if the representations of the two values are the same.
 func Compare(a, b interface{}) bool {
-	astr := DescribeValue(a)
-	bstr := DescribeValue(b)
+	astr := Value(a)
+	bstr := Value(b)
 	if astr == bstr {
 		return true
 	}
