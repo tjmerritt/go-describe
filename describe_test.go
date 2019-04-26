@@ -18,11 +18,7 @@ type Obj struct {
 	Field int
 }
 
-var nested struct {
-	A struct {
-		B int
-	}
-} = struct {
+var nested = struct {
 	A struct {
 		B int
 	}

@@ -11,7 +11,7 @@ import (
 
 type packageType int
 
-// return a string that could be used to define a type
+// DescribeType returns a string that could be used to define a type
 func DescribeType(v interface{}) string {
 	var buf bytes.Buffer
 	describeType(&buf, reflect.TypeOf(v), 0, false)
@@ -164,7 +164,7 @@ func describeType(f io.Writer, t reflect.Type, level int, name bool) {
 	}
 }
 
-// returns a string that could be used to declare an initial value
+// DescribeValue returns a string that could be used to declare an initial value
 func DescribeValue(v interface{}) string {
 	var buf bytes.Buffer
 	describeValue(&buf, reflect.TypeOf(v), reflect.ValueOf(v), 0)
@@ -184,9 +184,8 @@ func basicValue(t reflect.Type, v reflect.Value) string {
 	case reflect.Bool:
 		if i.(bool) {
 			return "true"
-		} else {
-			return "false"
 		}
+		return "false"
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return fmt.Sprintf("%d", i)
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
@@ -198,17 +197,15 @@ func basicValue(t reflect.Type, v reflect.Value) string {
 		j := imag(i.(complex64))
 		if j != 0.0 {
 			return fmt.Sprintf("%g+%gi", r, j)
-		} else {
-			return fmt.Sprintf("%g", r)
 		}
+		return fmt.Sprintf("%g", r)
 	case reflect.Complex128:
 		r := real(i.(complex128))
 		j := imag(i.(complex128))
 		if j != 0.0 {
 			return fmt.Sprintf("%g+%gi", r, j)
-		} else {
-			return fmt.Sprintf("%g", r)
 		}
+		return fmt.Sprintf("%g", r)
 	case reflect.String:
 		// Should probably do some decoding of the string to make special characters visible, but this
 		// is good enough for now.
