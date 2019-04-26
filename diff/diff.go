@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	describe.SetDiffFunc(diffFunc)
+	describe.DiffFunc(diffFunc)
 
 }
 
