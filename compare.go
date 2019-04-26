@@ -7,7 +7,13 @@ import (
 
 var diffFunc func(out io.Writer, a, b string)
 
-// DiffFunc sets a function that Compare will use to compute and report differences between two strings
+// DiffFunc sets a function that Compare will use to compute and report differences between two strings.
+// To include a default diff function, import the go-describe/diff package.
+//
+//      import (
+//              _ "github.com/tjmerritt/go-describe/diff"
+//      )
+//
 func DiffFunc(f func(out io.Writer, a, b string)) {
 	diffFunc = f
 }
