@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func TestSetDiffFunc(t *testing.T) {
+func TestDiffFunc(t *testing.T) {
 	type args struct {
 		f func(out io.Writer, a, b string)
 	}
@@ -23,7 +23,7 @@ func TestSetDiffFunc(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			SetDiffFunc(tt.args.f)
+			DiffFunc(tt.args.f)
 		})
 	}
 }
@@ -67,7 +67,7 @@ func TestCompare(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			SetDiffFunc(tt.diffFunc)
+			DiffFunc(tt.diffFunc)
 			if got := Compare(tt.args.a, tt.args.b); got != tt.want {
 				t.Errorf("Compare() = %v, want %v", got, tt.want)
 			}
