@@ -9,7 +9,7 @@ import (
 	"sync"
 )
 
-type PackageType int
+type packageType int
 
 // return a string that could be used to define a type
 func DescribeType(v interface{}) string {
@@ -56,7 +56,7 @@ func typeName(t reflect.Type) string {
 		return ""
 	}
 	path := t.PkgPath()
-	if path == "" || path == reflect.TypeOf(PackageType(0)).PkgPath() {
+	if path == "" || path == reflect.TypeOf(packageType(0)).PkgPath() {
 		if name == "bool" || name == "int" || name == "string" {
 			return ""
 		}
@@ -324,7 +324,7 @@ func describeValue(f io.Writer, t reflect.Type, v reflect.Value, level int) {
 
 			fmt.Fprintf(f, "%s", indent(level+1))
 			if !sf.Anonymous {
-				if sf.PkgPath != "" && sf.PkgPath != reflect.TypeOf(PackageType(0)).PkgPath() {
+				if sf.PkgPath != "" && sf.PkgPath != reflect.TypeOf(packageType(0)).PkgPath() {
 					fmt.Fprintf(f, "%s.%s: ", sf.PkgPath, sf.Name)
 				} else {
 					fmt.Fprintf(f, "%s: ", sf.Name)
